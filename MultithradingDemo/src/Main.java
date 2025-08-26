@@ -38,9 +38,10 @@ public class Main {
         t.start();
 
         t4.start();
+        t.join();
         t4.interrupt();
         t5.start();
-        t.join();  // this results in excuting t6 after t completes its execution
+//        t.join();  // this results in executing t6 after t completes its execution
         t6.start();
 
 

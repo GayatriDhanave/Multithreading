@@ -1,0 +1,28 @@
+package com.synchronization;
+
+public class Bank {
+
+    private static int balance=1000;
+
+    public void deposit(int amt){
+        synchronized (this) {
+            balance=balance+amt;
+            System.out.println("Money deposited: Rs. "+amt+". Your balance is: Rs. "+balance);
+        }
+    }
+
+    public synchronized  void withdraw(int amt){
+        if(balance>=amt){
+            balance=balance-amt;
+            System.out.println("Money withdrawed: Rs. "+amt+". Your balance is: Rs. "+balance);
+
+        }
+        else {
+            System.out.println("Insufficient balance");
+        }
+    }
+
+    public static synchronized  int getBalance() {
+        return balance;
+    }
+}
