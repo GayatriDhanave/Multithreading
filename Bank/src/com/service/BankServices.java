@@ -4,6 +4,7 @@ import com.entity.BankAccount;
 import com.inmemorycache.Storage;
 
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BankServices {
 
@@ -22,7 +23,13 @@ public class BankServices {
         if(account!=null){
            double newBalance=account.getBalance()+amount;
            account.setBalance(newBalance);
-            System.out.println("Amount of Rs. "+amount+" crebited successfully! Your current balance is Rs. "+account.getBalance());
+            try {
+                Thread.sleep(25000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.println("Amount of Rs. "+amount+" credited successfully! Your "+account.getAccNumber()+ " current" +
+                    " balance is Rs. "+account.getBalance());
         }
         else {
             System.out.println("Account Number "+accNumber+" does not exist");
@@ -30,11 +37,22 @@ public class BankServices {
     }
 
     public synchronized void withdrawal(long accNumber, double amount) {
+//        ReentrantLock lock=new ReentrantLock();
+//
+//        if(lock.tryLock()){
+//
+//        }
         BankAccount account = storage.getBankAccount(accNumber);
         if (account != null) {
             if(account.getBalance()>=amount){
                 account.setBalance(account.getBalance()-amount);
-                System.out.println("Amount of Rs. "+amount+" debited successfully! Your current balance is Rs. "+account.getBalance());
+                try {
+                    Thread.sleep(25000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                System.out.println("Amount of Rs. "+amount+" debited successfully from "+account.getAccNumber()+
+                        "! Your current balance is Rs. "+account.getBalance());
             }
             else  {
                 System.out.println("Insufficient balance!");
@@ -45,22 +63,35 @@ public class BankServices {
         }
     }
 
-    public synchronized void transfer(long fromAccNumber,long toAccNumber, double amount) {
-        BankAccount fromAccount = storage.getBankAccount(fromAccNumber);
-        BankAccount toAccount = storage.getBankAccount(toAccNumber);
-        if (fromAccount != null && toAccount != null) {
-            if(fromAccount.getBalance()>=amount){
-                fromAccount.setBalance(fromAccount.getBalance()-amount);
-                toAccount.setBalance(toAccount.getBalance()+amount);
-                System.out.println("Amount of Rs. "+amount+ " has been debited and successfully transeferred to "+toAccount.getAccHolderName());
+    public  void transfer(long fromAccNumber,long toAccNumber, double amount) {
+        synchronized(this){
+            BankAccount fromAccount = storage.getBankAccount(fromAccNumber);
+            BankAccount toAccount = storage.getBankAccount(toAccNumber);
+            if (fromAccount != null && toAccount != null) {
+                if(fromAccount.getBalance()>=amount){
+                    fromAccount.setBalance(fromAccount.getBalance()-amount);
+                    toAccount.setBalance(toAccount.getBalance()+amount);
+                    try {
+                        Thread.sleep(25000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    System.out.println("Amount of Rs. "+amount+ " has been debited from "+fromAccount.getAccNumber()+
+                            " and successfully transeferred to "+toAccount.getAccHolderName());
+                }
+                else  {
+                    System.out.println("Insufficient balance!");
+                }
             }
             else  {
-                System.out.println("Insufficient balance!");
+                System.out.println("Account Number does not exist");
             }
         }
-        else  {
-            System.out.println("Account Number does not exist");
-        }
+
     }
 
+    public void getAccountDetails (long acc) {
+        BankAccount account = storage.getBankAccount(acc);
+        System.out.println(account);
+    }
 }
