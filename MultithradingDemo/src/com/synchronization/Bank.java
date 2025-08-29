@@ -1,5 +1,8 @@
 package com.synchronization;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 public class Bank {
 
     private static int balance=1000;
@@ -19,6 +22,8 @@ public class Bank {
         }
         else {
             System.out.println("Insufficient balance");
+//            ReadWriteLock rwLock = new ReentrantReadWriteLock();
+//            rwLock.
         }
     }
 
